@@ -136,7 +136,7 @@ class BkassCallBackView(APIView):
 
                 if exe_payment_status == "0000":
                     # Successful payment; proceed with volunteer registration
-                    data={'name':name,'email':email}
+                    data={'name':name,'email':email,'food':food,'phone':phone,'age':age,'tshirt_size':tshirt_size}
                     base_url = config('URL')
                     latest_volunteer_season = VolunteerSeason.objects.order_by('-id').first()
                     if not latest_volunteer_season or not latest_volunteer_season.intake_status:
