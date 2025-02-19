@@ -10,3 +10,4 @@ test.py
 service_account.json
 utils/service_account.json
 test/
+venv/
