@@ -3,6 +3,8 @@ __pycache__/
 .env
 .vscode/
 .idea/
+.sqlite3
+db.sqlite3
 util/service_account.json
 media/
 test.py
