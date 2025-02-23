@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TokenGenarateView,BkashPaymentCreateView,BkassCallBackView,CreateVolentierViwe,StartVolunteerIntakeView,StopVolunteerIntakeView,LoadingView
+from .views import TokenGenarateView,BkashPaymentCreateView,BkassCallBackView,CreateVolentierViwe,StartVolunteerIntakeView,StopVolunteerIntakeView
 
 urlpatterns = [
     path("start_volunteer_intake/",StartVolunteerIntakeView.as_view(),name="Start taking volentiers"),
