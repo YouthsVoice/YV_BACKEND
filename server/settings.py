@@ -3,7 +3,7 @@ from datetime import timedelta
 import os
 import dj_database_url
 from decouple import config
-
+from urllib.parse import urlparse, parse_qs
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,11 +14,33 @@ SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG",cast=bool)
 
-ALLOWED_HOSTS = ['*','127.0.0.1','localhost','10.0','0.0.0.0']
+ALLOWED_HOSTS = ['*','youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com','127.0.0.1','localhost','10.0','0.0.0.0']
 
 
 # Application definition
 
+
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://neondb_owner:npg_s1BIPfmzC8EH@ep-empty-leaf-a1cuoowj-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
+)
+
+parsed_url = urlparse(DATABASE_URL)
+query_params = parse_qs(parsed_url.query)
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": parsed_url.path[1:],  # Remove leading slash
+        "USER": parsed_url.username,
+        "PASSWORD": parsed_url.password,
+        "HOST": parsed_url.hostname,
+        "PORT": parsed_url.port or 5432,  # Default PostgreSQL port
+        "OPTIONS": {
+            "sslmode": query_params.get("sslmode", ["require"])[0]
+        },
+    }
+}
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,12 +98,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
 
 
 # Password validation

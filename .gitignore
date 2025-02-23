@@ -1,6 +1,5 @@
 *.pyc
 __pycache__/
-.env
 .vscode/
 .idea/
 .sqlite3
@@ -13,3 +12,9 @@ service_account.json
 utils/service_account.json
 test/
 venv/
+APIS.txt
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

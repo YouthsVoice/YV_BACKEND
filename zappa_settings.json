@@ -1,0 +1,9 @@
+{
+    "production":{
+        "aws_region":"us-west-2",
+        "djangosettings":"server.settings",
+        "project_name":"server",
+        "runtime":"python3.9",
+        "s3_bucket":"zappayv"
+    }
+}
