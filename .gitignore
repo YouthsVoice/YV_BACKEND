@@ -12,7 +12,7 @@ service_account.json
 utils/service_account.json
 test/
 venv/
-APIS.txt
+gg.txt
 
 # Elastic Beanstalk Files
 .elasticbeanstalk/*

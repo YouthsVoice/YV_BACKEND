@@ -1,6 +1,7 @@
 {
     "production":{
         "aws_region":"us-west-2",
+        "app_function": "server.wsgi.application",
         "djangosettings":"server.settings",
         "project_name":"server",
         "runtime":"python3.9",
