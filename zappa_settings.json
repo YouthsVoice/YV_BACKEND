@@ -5,6 +5,7 @@
         "djangosettings":"server.settings",
         "project_name":"server",
         "runtime":"python3.9",
-        "s3_bucket":"zappayv"
+        "s3_bucket":"zappayv",
+        "slim_handler": true
     }
 }
