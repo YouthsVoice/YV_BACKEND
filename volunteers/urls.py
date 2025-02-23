@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TokenGenarateView,BkashPaymentCreateView,BkassCallBackView,CreateVolentierViwe,StartVolunteerIntakeView,StopVolunteerIntakeView
+from .views import TokenGenarateView,BkashPaymentCreateView,BkassCallBackView,CreateVolentierViwe,StartVolunteerIntakeView,StopVolunteerIntakeView,VolunteerSeasonListView
 
 urlpatterns = [
     path("start_volunteer_intake/",StartVolunteerIntakeView.as_view(),name="Start taking volentiers"),
@@ -8,4 +8,5 @@ urlpatterns = [
     path("payment/create/",BkashPaymentCreateView.as_view(),name="Bkash Pyment Create"),
     path("payment/callback/",BkassCallBackView.as_view(),name="Bkash Bkash Call Back view"),
     path("create/",CreateVolentierViwe.as_view(),name="Create Volentier"),
+    path('volunteer-seasons/', VolunteerSeasonListView.as_view(), name='volunteer_season_list'),
 ]

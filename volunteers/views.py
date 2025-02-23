@@ -7,10 +7,7 @@ from .models import VolunteerSeason # Import the model
 from django.shortcuts import  render
 from utils.bkash_payment_middilware import bkash_genarate_token ,bkash_create_payment,bkash_execute_payment
 from decouple import config
-from django.shortcuts import render
-from django.views import View
-import requests
-from django.urls import reverse
+from .serializers import VolunteerSeasonSerializer
 class StartVolunteerIntakeView(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -206,3 +203,10 @@ class CreateVolentierViwe(APIView):
         else:
             return Response({"error": "Failed to register volunteer"}, status=500)
 
+
+class VolunteerSeasonListView(APIView):
+    parser_classes=[IsAuthenticated]
+    def get(self, request):
+        seasons = VolunteerSeason.objects.order_by('-id')  # Latest order
+        serializer = VolunteerSeasonSerializer(seasons, many=True)
+        return Response(serializer.data)
