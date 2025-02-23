@@ -6,6 +6,8 @@
         "project_name":"server",
         "runtime":"python3.9",
         "s3_bucket":"zappayv",
-        "slim_handler": true
+        "slim_handler": true,
+        "exclude": ["venv/*", "*.pyc", "__pycache__/*", "migrations/*", "static/*", ".git/*"]
+
     }
 }
