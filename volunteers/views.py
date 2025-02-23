@@ -206,7 +206,3 @@ class CreateVolentierViwe(APIView):
         else:
             return Response({"error": "Failed to register volunteer"}, status=500)
 
-
-class LoadingView(View):
-    def get(self, request):
-        return render(request, 'loading.html')
