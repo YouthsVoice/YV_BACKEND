@@ -20,25 +20,12 @@ ALLOWED_HOSTS = ['*','youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeansta
 # Application definition
 
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://neondb_owner:npg_s1BIPfmzC8EH@ep-empty-leaf-a1cuoowj-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
-)
 
-parsed_url = urlparse(DATABASE_URL)
-query_params = parse_qs(parsed_url.query)
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": parsed_url.path[1:],  # Remove leading slash
-        "USER": parsed_url.username,
-        "PASSWORD": parsed_url.password,
-        "HOST": parsed_url.hostname,
-        "PORT": parsed_url.port or 5432,  # Default PostgreSQL port
-        "OPTIONS": {
-            "sslmode": query_params.get("sslmode", ["require"])[0]
-        },
+       'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "db.sqlite3",  # This will store the database file in your project root
     }
 }
 INSTALLED_APPS = [
