@@ -3,5 +3,5 @@ from .models import VolunteerSeason
 
 class VolunteerSeasonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = VolunteerSeason
+        model = VolunteerSeason 
         fields = '__all__'

@@ -28,7 +28,7 @@ def create_new_volunteer_sheet(event_name):
         sheet_id = sheet_file['id']
         
         # Define headers for the new sheet
-        columns = ["Name", "Email", "Phone", "Age", "T-shirt Size", "Registration Date", "RELIGION", "TRX ID","Bloodgrp","Adress","Institution"]
+        columns = ["Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION", "TRX ID","Bloodgrp","Adress","Institution", "Registration Date", ]
         
         # Write headers to the sheet
         sheets_service.spreadsheets().values().update(
@@ -109,7 +109,7 @@ def append_to_volunteer_sheet(file_id, data):
         sheet = service.spreadsheets()
         
         # Prepare headers and check if they need to be set
-        headers = ["Name", "Email", "Phone", "Age", "T-shirt Size", "Registration Date", "Food", "TRX ID","Bloodgrp","Adress","Institution"]
+        headers = ["Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION","TRX ID","Bloodgrp","Adress","Institution" "Registration Date",]
         try:
             # Attempt to read headers to see if they already exist
             sheet.values().get(spreadsheetId=file_id, range='Sheet1!A1:H1').execute()
@@ -130,9 +130,12 @@ def append_to_volunteer_sheet(file_id, data):
             data.get('phone', ''),
             data.get('age', ''),
             data.get('tshirt_size', ''),
-            current_time,  # Registration date
-            data.get('food', ''),
-            data.get('trx_id', '')
+            data.get('religion', ''),
+            data.get('trx_id', ''),
+            data.get('bloodgrp',''),
+            data.get('address',''),
+            data.get('institution',''),
+            current_time
         ]
         
         # Append the new row of data

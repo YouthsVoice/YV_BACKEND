@@ -9,7 +9,7 @@ from utils.bkash_payment_middilware import bkash_genarate_token ,bkash_create_pa
 from decouple import config
 from .serializers import VolunteerSeasonSerializer
 class StartVolunteerIntakeView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes=[AllowAny]
     
     def post(self, request):
         # Get event_name from the request data
@@ -83,14 +83,14 @@ class BkashPaymentCreateView(APIView):
             return Response({"error": "NO DATA was provided"}, status=401)
         else:
             name=request.data.get("name").replace(" ","-")
-            adress=request.data.get("address").replace(" ","-")
+            address=request.data.get("address").replace(" ","-")
             institution=request.data.get("institution").replace(" ","-")
             bloodgrp=request.data.get("bloodgrp")
             token = bkash_genarate_token()
 
             if token:
                 base_url = config("URL")
-                call_back_url = f"{base_url}/api/vol/payment/callback?token={token}&name={name}&email={data.get('email')}&phone={data.get('phone')}&religion={data.get('religion')}&age={data.get('age')}&tshirt_size={data.get('tshirt_size')}&adress={adress}&institution={institution}&bloodgrp={bloodgrp}"
+                call_back_url = f"{base_url}/api/vol/payment/callback?token={token}&name={name}&email={data.get('email')}&phone={data.get('phone')}&religion={data.get('religion')}&age={data.get('age')}&tshirt_size={data.get('tshirt_size')}&address={address}&institution={institution}&bloodgrp={bloodgrp}"
                 create_payment = bkash_create_payment(id=token, amount=data.get('amount'), callback_url=call_back_url)
                 create_payment = create_payment.replace(' ', '')
                 
@@ -117,7 +117,7 @@ class BkassCallBackView(APIView):
         age = request.query_params.get('age')
         tshirt_size = request.query_params.get('tshirt_size')
         religion = request.query_params.get('religion')
-        adress=request.query_params.get("address")
+        address=request.query_params.get("address")
         institution=request.query_params.get("institution")
         bloodgrp=request.query_params.get("bloodgrp")
 
@@ -134,19 +134,21 @@ class BkassCallBackView(APIView):
 
             if execute_payment_response:
                 exe_payment_status = execute_payment_response.get('statusCode')
-                trx_id = execute_payment_response.get('trxID')
+                
                 print(exe_payment_status)
 
                 if exe_payment_status == "0000":
                     # Successful payment; proceed with volunteer registration
-                    data={'name':name,'email':email,'religion':religion,'phone':phone,'age':age,'tshirt_size':tshirt_size,'bloodgrp':bloodgrp,'adress':adress,'institution':institution}
+                    trx_id = execute_payment_response.get('trxID')
+                    print(trx_id)
+                    data={'name':name,'email':email,'phone':phone,'age':age,'tshirt_size':tshirt_size,'religion':religion, 'trx_id':trx_id,'bloodgrp':bloodgrp,'address':address,'institution':institution}
                     base_url = config('URL')
                     latest_volunteer_season = VolunteerSeason.objects.order_by('-id').first()
                     if not latest_volunteer_season or not latest_volunteer_season.intake_status:
                             return Response({"error": "Volunteer intake is currently closed"}, status=400)
 
         # Validate incoming data (Recommended)
-                    required_fields = ['name', 'email', 'phone', 'age', 'tshirt_size', 'religion', 'trx_id','bloodgrp','adress','institution']
+                    required_fields = ['name', 'email', 'phone', 'age', 'tshirt_size', 'religion', 'trx_id','bloodgrp','address','institution']
                     file_id = latest_volunteer_season.file_id
                     success = append_to_volunteer_sheet(file_id, data)
 
@@ -205,7 +207,7 @@ class CreateVolentierViwe(APIView):
 
 
 class VolunteerSeasonListView(APIView):
-    parser_classes=[IsAuthenticated]
+    permission_classes=[AllowAny]
     def get(self, request):
         seasons = VolunteerSeason.objects.order_by('-id')  # Latest order
         serializer = VolunteerSeasonSerializer(seasons, many=True)
