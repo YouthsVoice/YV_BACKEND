@@ -92,10 +92,10 @@ class BkashPaymentCreateView(APIView):
                 base_url = config("URL")
                 call_back_url = f"{base_url}/api/vol/payment/callback?token={token}&name={name}&email={data.get('email')}&phone={data.get('phone')}&religion={data.get('religion')}&age={data.get('age')}&tshirt_size={data.get('tshirt_size')}&address={address}&institution={institution}&bloodgrp={bloodgrp}"
                 create_payment = bkash_create_payment(id=token, amount=data.get('amount'), callback_url=call_back_url)
-                create_payment = create_payment.replace(' ', '')
                 
                 if create_payment:
-                    return Response({"url": create_payment}, status=200)
+                    creat_payment = create_payment.replace(' ', '')
+                    return Response({"url": creat_payment}, status=200)
                 else:
                     return Response({"error": "Faced some error"}, status=501)
             else:
