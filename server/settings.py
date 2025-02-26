@@ -150,10 +150,8 @@ SIMPLE_JWT = {
 AUTH_USER_MODEL = 'members.Member'
 
 CORS_ALLOWED_ORIGINS = [
-    "https://yv-test.netlify.app",
-    "http://localhost:3000",
-    "https://youthsvoice.netlify.app",
-    "https://youthsvoice.org" # Remove any trailing slashes or paths
+    "https://youthsvoice.org",
+    "https://www.youthsvoice.org"  
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
