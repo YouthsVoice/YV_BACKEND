@@ -28,7 +28,7 @@ def create_new_volunteer_sheet(event_name):
         sheet_id = sheet_file['id']
         
         # Define headers for the new sheet
-        columns = ["Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION", "TRX ID","Bloodgrp","Adress","Institution", "Registration Date", ]
+        columns = ["ID","Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION", "TRX ID","Bloodgrp","Adress","Institution", "Registration Date", ]
         
         # Write headers to the sheet
         sheets_service.spreadsheets().values().update(
@@ -109,7 +109,7 @@ def append_to_volunteer_sheet(file_id, data):
         sheet = service.spreadsheets()
         
         # Prepare headers and check if they need to be set
-        headers = ["Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION","TRX ID","Bloodgrp","Adress","Institution" "Registration Date",]
+        headers = ["ID","Name", "Email", "Phone", "Age", "T-shirt Size","RELIGION","TRX ID","Bloodgrp","Adress","Institution" "Registration Date",]
         try:
             # Attempt to read headers to see if they already exist
             sheet.values().get(spreadsheetId=file_id, range='Sheet1!A1:H1').execute()
@@ -124,7 +124,11 @@ def append_to_volunteer_sheet(file_id, data):
         
         # Prepare new row data
         current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        response = sheet.values().get(spreadsheetId=file_id, range='Sheet1!A:A').execute()
+        existing_rows = response.get('values', [])
+        next_id = 1001 if len(existing_rows) < 2 else int(existing_rows[-1][0]) + 1  # Start at 101 and increment
         new_row = [
+            next_id,  # ID
             data.get('name', ''),
             data.get('email', ''),
             data.get('phone', ''),

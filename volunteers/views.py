@@ -180,30 +180,34 @@ class CreateVolentierViwe(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        data = request.data
+        name = request.data.get('name')
+        email = request.data.get('email')
+        phone = request.data.get('phone')
+        age = request.data.get('age')
+        tshirt_size = request.data.get('tshirt_size')
+        religion = request.data.get('religion')
+        address=request.data.get("address")
+        institution=request.data.get("institution")
+        bloodgrp=request.data.get("bloodgrp")
+        trx_id="qzq5qqzqzqzq5z5656"
+        data={'name':name,'email':email,'phone':phone,'age':age,'tshirt_size':tshirt_size,'religion':religion, 'trx_id':trx_id,'bloodgrp':bloodgrp,'address':address,'institution':institution}
 
-        # Check if the most recent volunteer season's intake status is open
+
         latest_volunteer_season = VolunteerSeason.objects.order_by('-id').first()
         if not latest_volunteer_season or not latest_volunteer_season.intake_status:
-            return Response({"error": "Volunteer intake is currently closed"}, status=400)
+                    return Response({"error": "Volunteer intake is currently closed"}, status=400)
 
         # Validate incoming data (Recommended)
-        required_fields = ['name', 'email', 'phone', 'age', 'tshirt_size', 'food', 'trx_id']
-        missing_fields = [field for field in required_fields if field not in data]
-        if missing_fields:
-            return Response({"error": f"Missing fields: {', '.join(missing_fields)}"}, status=400)
-
-        # Append the new volunteer data to the current Google Drive sheet using the file ID
         file_id = latest_volunteer_season.file_id
         success = append_to_volunteer_sheet(file_id, data)
 
         if success:
             trx_id=data.get('trx_id')
             name=data.get('name').replace(' ', '-')
-            frontend_url = f"{config('FRONTEND_URL')}/youthvoice/volunteer/success?trx_id={trx_id}&name={name}"
-            return Response({"url":frontend_url},status=200)
+            return Response({"msg":"Successfully"},status=200)
         else:
             return Response({"error": "Failed to register volunteer"}, status=500)
+       
 
 
 class VolunteerSeasonListView(APIView):
