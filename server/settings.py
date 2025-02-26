@@ -148,10 +148,15 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
 AUTH_USER_MODEL = 'members.Member'
+CORS_ALLOW_ALL_ORIGINS = True
+# Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+
+# Allow all headers
+CORS_ALLOW_HEADERS = ["*"]
 
 CORS_ALLOWED_ORIGINS = [
     "https://youthsvoice.org",
     "https://www.youthsvoice.org"  
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
