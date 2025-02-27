@@ -13,6 +13,7 @@ SECRET_KEY = config("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config("DEBUG",cast=bool)
+DB=config("DB")
 
 ALLOWED_HOSTS = ['*','youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com','127.0.0.1','localhost','10.0','0.0.0.0']
 
@@ -28,6 +29,7 @@ DATABASES = {
         'NAME': BASE_DIR / "db.sqlite3",  # This will store the database file in your project root
     }
 }
+DATABASES['default']=dj_database_url.parse(DB)
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
