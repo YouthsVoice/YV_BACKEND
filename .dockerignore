@@ -19,7 +19,3 @@ node_modules/
 python/
 
 python_dependencies/
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml

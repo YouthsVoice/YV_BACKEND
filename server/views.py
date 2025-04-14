@@ -8,4 +8,4 @@ from rest_framework import status
 class HOmepage(APIView):
     permission_classes=[AllowAny]
     def get(self, request):
-        return Response({"message":"HELLO WORLD!"},status=status.HTTP_200_OK)
+        return Response({"message":"YV ON"},status=status.HTTP_200_OK)

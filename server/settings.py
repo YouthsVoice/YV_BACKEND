@@ -1,35 +1,74 @@
 from pathlib import Path
 from datetime import timedelta
 import os
-import dj_database_url
-from decouple import config
-from urllib.parse import urlparse, parse_qs
+import dj_database_url # type: ignore
+from decouple import config # type: ignore
+import boto3 # type: ignore
 
+# Base Directory
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
+# Environment Configuration
 SECRET_KEY = config("SECRET_KEY")
+DEBUG = config("DEBUG", cast=bool)
+DB_URL = config("DB", default=None)
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG",cast=bool)
-DB=config("DB")
-
-ALLOWED_HOSTS = ['*','youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com','127.0.0.1','localhost','10.0','0.0.0.0']
-
-
-# Application definition
-
-
-
-
-DATABASES = {
-       'default': {
+# Database Configuration
+#DB_FILE = os.path.join(BASE_DIR, 'db.sqlite3') if os.name == 'nt' else '/tmp/db.sqlite3'
+"""DATABASES = {
+    'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / "db.sqlite3",  # This will store the database file in your project root
+        'NAME': DB_FILE,
     }
 }
-DATABASES['default']=dj_database_url.parse(DB)
+
+# S3 Configuration for SQLite persistence
+S3_BUCKET = "zappa-dnklfrh3g"
+if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
+    s3 = boto3.client('s3')
+    
+    def download_db():
+        try:
+            s3.download_file(S3_BUCKET, 'db.sqlite3', DB_FILE)
+        except Exception as e:
+            Path(DB_FILE).touch()
+
+    def upload_db():
+        try:
+            s3.upload_file(DB_FILE, S3_BUCKET, 'db.sqlite3')
+        except Exception as e:
+            print(f"Upload error: {str(e)}")
+
+    download_db()"""
+# settings.py (simplified)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'neondb',  # Database name
+        'USER': 'neondb_owner',
+        'PASSWORD': 'npg_8H2VDgCrToOS',
+        'HOST': 'ep-small-recipe-a1u5ihpq-pooler.ap-southeast-1.aws.neon.tech',
+        'PORT': 5432,  # Default PostgreSQL port
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
+        'DISABLE_SERVER_SIDE_CURSORS': True,
+    }
+}
+if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
+    DATABASES = {
+        'default': dj_database_url.parse(config('DB'))
+    }
+# Security
+ALLOWED_HOSTS = [
+    'youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com',
+    'youthsvoice.org',
+    'www.youthsvoice.org',
+    'localhost',
+    '127.0.0.1'
+]
+
+# Application Definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,99 +78,32 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'members', 
-    'whitenoise.runserver_nostatic',
     'corsheaders',
+    'whitenoise.runserver_nostatic',
+    'members',
     'events',
     'volunteers',
     'donation'
-      # your app
-
-    
-
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    
 ]
 
-ROOT_URLCONF = 'server.urls'
+# Static Files
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
-WSGI_APPLICATION = 'server.wsgi.application'
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
-
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-
+# REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
@@ -140,25 +112,26 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
 }
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-MEDIA_URL = '/media/'
+# CORS
+CORS_ALLOWED_ORIGINS = [
+    "https://youthsvoice.org",
+    "https://www.youthsvoice.org"
+]
+CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
+# Authentication
+AUTH_USER_MODEL = 'members.Member'
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 }
-AUTH_USER_MODEL = 'members.Member'
-CORS_ALLOW_ALL_ORIGINS = True
-# Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 
-# Allow all headers
-CORS_ALLOW_HEADERS = ["*"]
+# Internationalization
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://youthsvoice.org",
-    "https://www.youthsvoice.org"  
-]
-
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
