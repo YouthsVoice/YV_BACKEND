@@ -64,7 +64,7 @@ ALLOWED_HOSTS = [
     'youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com',
     'youthsvoice.org',
     'www.youthsvoice.org',
-    'localhost',
+    'localhost','.awsapprunner.com',
     '127.0.0.1'
 ]
 
