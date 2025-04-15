@@ -6,6 +6,9 @@ build:
     - pip install -r requirements.txt
     - python manage.py collectstatic --noinput
 run:
-  command: gunicorn --bind 0.0.0.0:8000 yourproject.wsgi:application  # Fix this path!
+  runtime-version: 3.11
+  command: |
+    python manage.py migrate --noinput &&
+    gunicorn --bind 0.0.0.0:8000 server.wsgi:application
   network:
     port: 8000
