@@ -8,6 +8,6 @@ build:
     - python manage.py collectstatic --noinput
 
 run:
-  command: gunicorn --bind 0.0.0.0:8000 server.wsgi:application  # Fix this path!
+  command: gunicorn --bind 0.0.0.0:8000 yourproject.wsgi:application  # Fix this path!
   network:
     port: 8000
