@@ -2,13 +2,18 @@ version: 1.0
 runtime: python311
 build:
   commands:
-    - python -m pip install --upgrade pip
-    - pip install -r requirements.txt
-    - python manage.py collectstatic --noinput
+    build:
+      - python3.11 -m ensurepip --upgrade
+      - python3.11 -m pip install Django
+      - python3.11 -m pip install -r requirements.txt
+      - python3.11 -m pip install gunicorn
 run:
   runtime-version: 3.11
-  command: |
-    python manage.py migrate --noinput &&
-    gunicorn --bind 0.0.0.0:8000 server.wsgi:application
-  network:
+  pre-run:
+    - pip3 install gunicorn
+    - pip3 install -r requirements.txt
+    - python manage.py migrate --noinput
+    - which gunicorn
+  command: gunicorn --bind 0.0.0.0:8000 server.wsgi:application
+  network: 
     port: 8000
