@@ -41,7 +41,7 @@ if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
 
     download_db()"""
 # settings.py (simplified)
-DATABASES = {
+"""DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'neondb',  # Database name
@@ -53,6 +53,12 @@ DATABASES = {
             'sslmode': 'require',
         },
         'DISABLE_SERVER_SIDE_CURSORS': True,
+    }
+}"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
