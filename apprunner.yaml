@@ -1,25 +1,13 @@
 version: 1.0
 runtime: python311
+
 build:
   commands:
-    build:
-      - python3.11 -m ensurepip --upgrade
-      - python3.11 -m pip install Django
-      - python3.11 -m pip install -r requirements.txt
-      - python3.11 -m pip install gunicorn
-  env:
-    - name: DEBUG
-      value: "on"
-    - name: SECRET_KEY
-      value: "*"
-    - name: ALLOWED_HOSTS
-      value: "*"
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt
+    - python manage.py collectstatic --noinput
+
 run:
-  runtime-version: 3.11
-  pre-run:
-    - pip3 install gunicorn
-    - pip3 install -r requirements.txt
-    - which gunicorn
-  command: gunicorn --bind 0.0.0.0:8000 server.wsgi
-  network: 
+  command: gunicorn --bind 0.0.0.0:8000 server.wsgi:application  # Fix this path!
+  network:
     port: 8000
