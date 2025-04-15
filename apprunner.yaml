@@ -1,12 +1,10 @@
 version: 1.0
 runtime: python311
-
 build:
   commands:
     - python -m pip install --upgrade pip
     - pip install -r requirements.txt
     - python manage.py collectstatic --noinput
-
 run:
   command: gunicorn --bind 0.0.0.0:8000 yourproject.wsgi:application  # Fix this path!
   network:
