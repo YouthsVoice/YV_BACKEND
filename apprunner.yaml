@@ -1,15 +1,11 @@
 version: 1.0
-
 runtime: python3
-
 build:
   commands:
-    - pip install --upgrade pip
-    - pip install -r requirements.txt
-    - python manage.py collectstatic --noinput
-    - python manage.py migrate
-
+    build:
+      - pip install -r requirements.txt
 run:
-  command: gunicorn server.wsgi:application --bind 0.0.0.0:8000
+  runtime-version: 3.8.16
+  command: sh startup.sh
   network:
     port: 8000

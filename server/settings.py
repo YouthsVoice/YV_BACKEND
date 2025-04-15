@@ -60,7 +60,7 @@ if os.environ.get('AWS_LAMBDA_FUNCTION_NAME'):
         'default': dj_database_url.parse(config('DB'))
     }
 # Security
-ALLOWED_HOSTS = [
+ALLOWED_HOSTS = ['*',
     'youthsvoice-env.eba-dnbsv7bi.ap-southeast-2.elasticbeanstalk.com',
     'youthsvoice.org',
     'www.youthsvoice.org',
