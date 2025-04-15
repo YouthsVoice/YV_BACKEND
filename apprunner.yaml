@@ -1,11 +1,25 @@
 version: 1.0
-runtime: python3
+runtime: python311
 build:
   commands:
     build:
-      - pip install -r requirements.txt
+      - python3.11 -m ensurepip --upgrade
+      - python3.11 -m pip install Django
+      - python3.11 -m pip install -r requirements.txt
+      - python3.11 -m pip install gunicorn
+  env:
+    - name: DEBUG
+      value: "on"
+    - name: SECRET_KEY
+      value: "*"
+    - name: ALLOWED_HOSTS
+      value: "*"
 run:
-  runtime-version: 3.8.16
-  command: sh startup.sh
-  network:
-    port: 8000
+  runtime-version: 3.11
+  pre-run:
+    - pip3 install gunicorn
+    - pip3 install -r requirements.txt
+    - which gunicorn
+  command: gunicorn server.wsgi:application  --log-file -
+  network: 
+    port: 8080
