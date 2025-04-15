@@ -20,6 +20,6 @@ run:
     - pip3 install gunicorn
     - pip3 install -r requirements.txt
     - which gunicorn
-  command: gunicorn server.wsgi:application  --log-file -
+  command: gunicorn --bind 0.0.0.0:8000 server.wsgi
   network: 
     port: 8080
