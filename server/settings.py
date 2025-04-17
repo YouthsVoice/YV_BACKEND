@@ -6,7 +6,7 @@ from decouple import config # type: ignore
 import boto3 # type: ignore
 
 # Base Directory
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Environment Configuration
 
