@@ -1,32 +1,25 @@
-# Use an official Python runtime as a parent image
+# Use the official Python image
 FROM python:3.11-slim
 
 # Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set work directory
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Python dependencies
-COPY requirements.txt .
+# Install dependencies
+COPY requirements.txt /app/
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
 # Copy project files
-COPY . .
+COPY . /app/
 
-# Run migrations and collect static files
+# Collect static files
 RUN python manage.py collectstatic --noinput
-RUN python manage.py migrate
 
-# Expose port
-EXPOSE 8000
+# Expose the port (App Runner expects 8080 by default)
+EXPOSE 8080
 
-# Run the application
-CMD ["gunicorn", "server.wsgi:application", "--bind", "0.0.0.0:8000"]
+# Run the app using gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "server.wsgi:application"]
