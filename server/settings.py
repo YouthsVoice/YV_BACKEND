@@ -9,6 +9,15 @@ import boto3 # type: ignore
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Environment Configuration
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' # or your SMTP server
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'youthsvoiceweb@gmail.com'  # Your real Gmail address
+EMAIL_HOST_PASSWORD = 'mrakrdmvcpohoric'
+DEFAULT_FROM_EMAIL = 'Youth\'s Voice <youthsvoiceweb@gmail.com>'
+
+
 
 
 SECRET_KEY = config("SECRET_KEY")
@@ -65,7 +74,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'events',
     'volunteers',
-    'donation'
+    'donation',
+    'dashboard'
       # your app
 
     
