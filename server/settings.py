@@ -75,7 +75,8 @@ INSTALLED_APPS = [
     'events',
     'volunteers',
     'donation',
-    'dashboard'
+    'dashboard',
+    'donors'
       # your app
 
     

@@ -1,63 +1,62 @@
 from rest_framework.response import Response
 from django.http import HttpResponseRedirect
 from rest_framework.views import APIView
-from .utils.donation_helper import create_new_volunteer_sheet, stop_volunteer_intake,append_to_volunteer_sheet
+from .utils.donation_helper import create_new_donation_sheet, stop_volunteer_intake,append_to_volunteer_sheet
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from .models import DonationSeason # Import the model
-from django.shortcuts import  render
 from utils.bkash_payment_middilware import bkash_genarate_token ,bkash_create_payment,bkash_execute_payment
 from decouple import config
 from .serializers import DonationSeasonSerializer
 
 
-class StartVolunteerIntakeView(APIView):
+class StartDonationIntakeView(APIView):
     permission_classes=[AllowAny]
     
     def post(self, request):
         # Get event_name from the request data
-        event_name = request.data.get('event_name')
+        season_name = request.data.get('season_name')
         
-        if not event_name:
+        if not season_name:
             return Response({"error": "Event name is required"}, status=400)
         
         # Create a new sheet in Google Drive with the event_name and get the file ID
-        file_id = create_new_volunteer_sheet(event_name)
+        file_id = create_new_donation_sheet(season_name)
         
         # Create a new DonationSeason entry with intake status set to True
         new_season = DonationSeason.objects.create(
-            event_name=event_name,
+            season_name=season_name,
             file_id=file_id,
             intake_status=True  # Set the intake as open
         )
         
         return Response({
             "message": "Donation intake started",
-            "event_name": new_season.event_name,
+            "season_name": new_season.season_name,
             "file_id": new_season.file_id
         })
 
-class StopVolunteerIntakeView(APIView):
+class StopDonationIntakeView(APIView):
     def post(self, request):
         # Get the volunteer season ID from the request
-        volunteer_season_id = request.data.get('volunteer_season_id')
+        donation_season_id = request.data.get('donation_season_id')
 
-        if not volunteer_season_id:
+        if not donation_season_id:
             return Response({"error": "Volunteer season ID is required"}, status=400)
 
         # Fetch the volunteer season by ID
         try:
-            volunteer_season = DonationSeason.objects.get(id=volunteer_season_id)
+            donation_season = DonationSeason.objects.get(id=donation_season_id)
         except DonationSeason.DoesNotExist:
             return Response({"error": "Volunteer season not found"}, status=404)
 
         # Check if the intake is currently open
-        if volunteer_season.intake_status:
+        if donation_season.intake_status:
             # Stop the volunteer intake by uploading the file to Google Drive
-            file_url = stop_volunteer_intake(volunteer_season.file_id)
+            file_url = stop_volunteer_intake(donation_season.file_id)
             
             # Update the intake status to False
-            volunteer_season.intake_status = False
-            volunteer_season.save()
+            donation_season.intake_status = False
+            donation_season.save()
 
             return Response({"message": "Volunteer intake stopped", "file_url": file_url})
         else:
@@ -89,7 +88,7 @@ class BkashPaymentCreateView(APIView):
 
             if token:
                 base_url = config("URL")
-                call_back_url = f"{base_url}/api/vol/payment/callback?token={token}&name={name}&email={data.get('email')}&phone={data.get('phone')}&ammount={data.get('ammount')}&event={data.get('event')}"
+                call_back_url = f"{base_url}/api/donate/payment/callback?token={token}&name={name}&email={data.get('email')}&phone={data.get('phone')}&ammount={data.get('ammount')}&sector={data.get('sector')}"
                 create_payment = bkash_create_payment(id=token, amount=data.get('amount'), callback_url=call_back_url)
                 
                 if create_payment:
@@ -114,7 +113,7 @@ class BkassCallBackView(APIView):
         email = request.query_params.get('email')
         phone = request.query_params.get('phone')
         ammount = request.query_params.get('ammount')
-        event=request.query_params.get('event')
+        sector=request.query_params.get('sector')
 
         if status in ["failure", "cancel"]:
             # Redirecting to error page if status is failure or cancel
@@ -134,12 +133,12 @@ class BkassCallBackView(APIView):
                     # Successful payment; proceed with volunteer registration
                     trx_id = execute_payment_response.get('trxID')
                     print(trx_id)
-                    data={'name':name,'email':email,'phone':phone,'ammount':ammount,"event":event}
+                    data={'name':name,'email':email,'phone':phone,'ammount':ammount,"sector":sector}
                     base_url = config('URL')
-                    latest_volunteer_season = DonationSeason.objects.order_by('-id').first()
-                    if not latest_volunteer_season or not latest_volunteer_season.intake_status:
+                    latest_donation_season = DonationSeason.objects.order_by('-id').first()
+                    if not latest_donation_season or not latest_donation_season.intake_status:
                             return Response({"error": "Volunteer intake is currently closed"}, status=400)
-                    file_id = latest_volunteer_season.file_id
+                    file_id = latest_donation_season.file_id
                     success = append_to_volunteer_sheet(file_id, data)
 
                     if success:
@@ -168,12 +167,12 @@ class CreateVolentierViwe(APIView):
         data={'name':name,'email':email,'phone':phone,'ammount':ammount}
 
 
-        latest_volunteer_season = DonationSeason.objects.order_by('-id').first()
-        if not latest_volunteer_season or not latest_volunteer_season.intake_status:
+        latest_donation_season = DonationSeason.objects.order_by('-id').first()
+        if not latest_donation_season or not latest_donation_season.intake_status:
                     return Response({"error": "Volunteer intake is currently closed"}, status=400)
 
         # Validate incoming data (Recommended)
-        file_id = latest_volunteer_season.file_id
+        file_id = latest_donation_season.file_id
         success = append_to_volunteer_sheet(file_id, data)
 
         if success:

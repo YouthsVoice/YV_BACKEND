@@ -19,7 +19,7 @@ def create_new_donation_sheet(event_name):
 
         # Create the Google Sheets file with the specified name
         file_metadata = {
-            'name': f'{event_name}_donation',
+            'name': f'{event_name}_Donor',
             'mimeType': 'application/vnd.google-apps.spreadsheet',
             'parents': ['1IBi1xdLWsfKY99ZsSBgoMeiFC6REvO_E']  # Replace with your folder ID
         }
@@ -28,7 +28,7 @@ def create_new_donation_sheet(event_name):
         sheet_id = sheet_file['id']
         
         # Define headers for the new sheet
-        columns = ["ID","Name", "Email", "Phone","TRX ID","SECTOR","Payment Date"]
+        columns = ["ID","Name", "Email", "Phone","TRX ID","TYPE","Payment Date"]
         
         # Write headers to the sheet
         sheets_service.spreadsheets().values().update(
@@ -109,7 +109,7 @@ def append_to_volunteer_sheet(file_id, data):
         sheet = service.spreadsheets()
         
         # Prepare headers and check if they need to be set
-        headers = ["ID","Name", "Email", "Phone","TRX ID","SECTOR"," Payment Date"]
+        headers = ["ID","Name", "Email", "Phone","TRX ID","TYPE"," Payment Date"]
         try:
             # Attempt to read headers to see if they already exist
             sheet.values().get(spreadsheetId=file_id, range='Sheet1!A1:H1').execute()
@@ -133,7 +133,7 @@ def append_to_volunteer_sheet(file_id, data):
             data.get('email', ''),
             data.get('phone', ''),
             data.get('trx_id', ''),
-            data.get('sector', ''),  # You can customize this to match your event name column 
+            data.get('type_of', ''),  # You can customize this to match your event name column 
             current_time
         ]
         
