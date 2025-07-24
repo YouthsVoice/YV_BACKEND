@@ -13,6 +13,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('api/donate/', include('donation.urls')),
     path('api/donors', include('donors.urls')),
+    path('api/admin/vol/', include('volunteer_dashboard.urls')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
